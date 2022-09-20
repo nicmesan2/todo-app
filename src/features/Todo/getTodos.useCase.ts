@@ -1,4 +1,4 @@
-import { TodoStateService } from "services";
+import {TodoApiService, TodoStateService} from "services";
 import { Todo, Todos } from "entities";
 import { TodoStates } from "entities/Todo.entity";
 
@@ -17,8 +17,16 @@ const orderTodosByState = (todos: Todos) => {
     return todosListByState;
 };
 
+export const getTodosFromApiOnInit = async (todosStateService: TodoStateService, todosApiService: TodoApiService) => {
+    const todosFromApi = await todosApiService.get()
+
+    todosStateService.setAll(todosFromApi)
+}
+
 export const getTodosByState = (todosStateService: TodoStateService) => {
     const todos = todosStateService.selectAll();
+
+    if (!todos) return undefined
 
     return orderTodosByState(todos);
 };

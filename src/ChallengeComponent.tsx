@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, {useCallback, useEffect, useMemo} from "react";
 
 import { TodoStates } from "entities/Todo.entity";
 import { useTodoState } from "store";
@@ -12,7 +12,14 @@ function ChallengeComponent() {
         isChangeToPreviousStatePossible,
         addTodo,
         todosByState,
+        initTodosFromApi,
     } = useTodoState();
+
+
+    useEffect(() => {
+        initTodosFromApi()
+    }, []);
+
 
     const handleCreateNewTodo = useCallback(
         (newTodoDescription: string) => {
@@ -22,6 +29,8 @@ function ChallengeComponent() {
     );
 
     const todosColumns = useMemo(() => {
+        if (!todosByState) return null
+
         return Object.keys(TodoStates).map((todoState) => {
             const handleLeftClick = isChangeToPreviousStatePossible(todoState) ? moveToPreviousState : null;
             const handleRightClick = isChangeToNextStatePossible(todoState) ? moveToNextState : null;
@@ -53,6 +62,18 @@ function ChallengeComponent() {
             );
         });
     }, [todosByState]);
+
+    if (!todosByState) {
+        return (
+            <div style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                display: "flex",
+                flex: 1
+            }}>Loading....</div>
+        )
+    }
 
     return (
         <>

@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useMemo } from "react";
+import React, {useCallback, useContext, useMemo } from "react";
 
-import { TodoStateService } from "services";
+import {TodoApiService, TodoStateService} from "services";
 import { Todo } from "entities";
 import {
     changeToNextState,
@@ -8,7 +8,7 @@ import {
     changeToPreviousState,
     getTodosByState,
     isChangeToNextStatePossible,
-    isChangeToPreviousStatePossible,
+    isChangeToPreviousStatePossible, getTodosFromApiOnInit,
 } from "features/Todo";
 
 const TodoStateContext = React.createContext<any>({});
@@ -17,12 +17,18 @@ export const useTodoState = () => useContext(TodoStateContext);
 
 interface TodoStateStoreProviderProps {
     useTodoStateService: () => TodoStateService;
+    useTodoApiService: () => TodoApiService;
 }
 
 // This is the hook to access the service in our components.
-export const TodoStateProvider: React.FC<TodoStateStoreProviderProps> = ({ children, useTodoStateService }) => {
+export const TodoStateProvider: React.FC<TodoStateStoreProviderProps> = ({ children, useTodoStateService, useTodoApiService }) => {
     // Instantiate service
     const todoStateService = useTodoStateService();
+    const todoApiService = useTodoApiService();
+
+    const initTodosFromApi = useCallback(() => {
+        getTodosFromApiOnInit(todoStateService, todoApiService)
+    }, [])
 
     const todosByState = useMemo(() => {
         return getTodosByState(todoStateService);
@@ -54,10 +60,11 @@ export const TodoStateProvider: React.FC<TodoStateStoreProviderProps> = ({ child
             addTodo,
             moveToPreviousState,
             moveToNextState,
+            initTodosFromApi,
             isChangeToNextStatePossible,
             isChangeToPreviousStatePossible,
         }),
-        [todosByState, addTodo, moveToPreviousState, moveToNextState]
+        [todosByState, addTodo, moveToPreviousState, moveToNextState, initTodosFromApi]
     );
 
     return <TodoStateContext.Provider value={values}>{children}</TodoStateContext.Provider>;

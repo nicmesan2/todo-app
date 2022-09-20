@@ -3,11 +3,12 @@ import ChallengeComponent from "./ChallengeComponent";
 import "./App.css";
 import { useTodoStateMemoryAdapter } from "adapters";
 import { TodoStateProvider } from "store";
+import { useTodoApiAdapter } from "./adapters/TodoApi.adapter";
 
 function App() {
     return (
         // This is where we will pass our service implementation to be available to our UI components
-        <TodoStateProvider useTodoStateService={useTodoStateMemoryAdapter}>
+        <TodoStateProvider useTodoApiService={useTodoApiAdapter} useTodoStateService={useTodoStateMemoryAdapter}>
             <div className="App" style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
                 <header className="App-header">
                     <div style={{ marginLeft: 25, display: "flex", flexDirection: "row", alignItems: "center" }}>
